@@ -114,7 +114,68 @@ class OrarendTervezo:
             f"Választott fájl: {self.selected_file.split('/')[-1]}\n"
             f"Választott algoritmus: {self.algorithm_var.get()}"
         ):
+            # Itt fut majd le az algoritmus
             print("Órarend generálása kezdődik...")
+            
+            # Algoritmus lefutása után megjelenítjük az eredmény ablakot
+            self.show_result_window()
+
+    def show_result_window(self):
+        # Új ablak létrehozása
+        self.result_window = tk.Toplevel()
+        self.result_window.title("Generálás eredménye")
+        self.result_window.geometry("300x200")
+        self.result_window.resizable(False, False)
+        
+        # Középre igazított üzenet
+        message_frame = ttk.Frame(self.result_window)
+        message_frame.pack(expand=True)
+        
+        # Pipa ikon (opcionális)
+        success_label = ttk.Label(message_frame,
+                                text="✓",
+                                font=('Helvetica', 48))
+        success_label.pack(pady=10)
+        
+        # Sikeres üzenet
+        success_message = ttk.Label(message_frame,
+                                  text="Az algoritmus sikeresen lefutott!",
+                                  font=('Helvetica', 12))
+        success_message.pack(pady=10)
+        
+        # Exportálás gomb
+        export_button = tk.Button(message_frame,
+                                text="Exportálás",
+                                font=('Helvetica', 10),
+                                command=self.export_schedule)
+        export_button.pack(pady=20)
+
+    def export_schedule(self):
+        # Itt lesz majd az exportálás logikája
+        try:
+            # Fájl mentési ablak megnyitása
+            filename = filedialog.asksaveasfilename(
+                defaultextension=".xlsx",
+                filetypes=[
+                    ("Excel fájlok", "*.xlsx"),
+                    ("CSV fájlok", "*.csv"),
+                    ("Minden fájl", "*.*")
+                ],
+                title="Órarend mentése"
+            )
+            
+            if filename:
+                # Itt történik majd a tényleges exportálás
+                print(f"Exportálás ide: {filename}")
+                messagebox.showinfo("Siker", 
+                                  "Az órarend sikeresen exportálva!")
+                
+                # Eredmény ablak bezárása
+                self.result_window.destroy()
+                
+        except Exception as e:
+            messagebox.showerror("Hiba", 
+                               f"Hiba történt az exportálás során: {str(e)}")
 
     def manual_mode(self):
         # Elrejtjük az eredeti ablakot
