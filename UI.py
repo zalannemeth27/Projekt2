@@ -117,8 +117,126 @@ class OrarendTervezo:
             print("Órarend generálása kezdődik...")
 
     def manual_mode(self):
-        # Itt lesz majd a manuális mód logikája
-        print("Manuális mód indítása...")
+        # Elrejtjük az eredeti ablakot
+        self.root.withdraw()
+        
+        # Új ablak létrehozása
+        self.manual_window = tk.Toplevel()
+        self.manual_window.title("Manuális órarend készítés")
+        self.manual_window.geometry("400x600")  # Nagyobb magasság a több mezőnek
+        self.manual_window.resizable(False, False)
+
+        # Címke az ablak tetején
+        title_label = ttk.Label(self.manual_window,
+                              text="Manuális adatbevitel",
+                              font=('Helvetica', 16, 'bold'))
+        title_label.pack(pady=20)
+
+        # Információs szöveg
+        info_label = ttk.Label(self.manual_window,
+                             text="Itt manuálisan be lehet vinni az adatokat.",
+                             font=('Helvetica', 10))
+        info_label.pack(pady=10)
+
+        # Adatbeviteli mezők kerete
+        input_frame = ttk.Frame(self.manual_window, padding="20")
+        input_frame.pack(fill=tk.BOTH, expand=True)
+
+        # Teremnév
+        ttk.Label(input_frame, text="Teremnév:").pack(anchor=tk.W)
+        self.room_name_entry = ttk.Entry(input_frame, width=40)
+        self.room_name_entry.pack(fill=tk.X, pady=(0, 10))
+
+        # Terem kapacitása
+        ttk.Label(input_frame, text="Terem kapacitása:").pack(anchor=tk.W)
+        self.room_capacity_entry = ttk.Entry(input_frame, width=40)
+        self.room_capacity_entry.pack(fill=tk.X, pady=(0, 10))
+
+        # Tárgy neve
+        ttk.Label(input_frame, text="Tárgy neve:").pack(anchor=tk.W)
+        self.subject_entry = ttk.Entry(input_frame, width=40)
+        self.subject_entry.pack(fill=tk.X, pady=(0, 10))
+
+        # Tárgy kezdeti időpontja
+        ttk.Label(input_frame, text="Tárgy kezdeti időpontja:").pack(anchor=tk.W)
+        self.start_time_entry = ttk.Entry(input_frame, width=40)
+        self.start_time_entry.pack(fill=tk.X, pady=(0, 10))
+        self.start_time_entry.insert(0, "pl.: 8:00")
+
+        # Tárgy befejezési időpontja
+        ttk.Label(input_frame, text="Tárgy befejezési időpontja:").pack(anchor=tk.W)
+        self.end_time_entry = ttk.Entry(input_frame, width=40)
+        self.end_time_entry.pack(fill=tk.X, pady=(0, 20))
+        self.end_time_entry.insert(0, "pl.: 9:30")
+
+        # Gombok kerete
+        button_frame = ttk.Frame(self.manual_window)
+        button_frame.pack(fill=tk.X, padx=20, pady=20)
+
+        # Hozzáadás gomb (középen)
+        add_button = tk.Button(button_frame,
+                             text="Hozzáadás",
+                             font=('Helvetica', 10),
+                             command=self.add_manual_data)
+        add_button.pack(side=tk.TOP, pady=10)
+
+        # Vissza gomb (bal alsó sarok)
+        back_button = tk.Button(self.manual_window,
+                              text="Vissza",
+                              font=('Helvetica', 10),
+                              command=self.close_manual_window)
+        back_button.pack(side=tk.BOTTOM, anchor=tk.SW, padx=10, pady=10)
+
+        # Ha bezárják az ablakot X-szel
+        self.manual_window.protocol("WM_DELETE_WINDOW", self.close_manual_window)
+
+    def add_manual_data(self):
+        # Adatok beolvasása
+        room_name = self.room_name_entry.get()
+        room_capacity = self.room_capacity_entry.get()
+        subject = self.subject_entry.get()
+        start_time = self.start_time_entry.get()
+        end_time = self.end_time_entry.get()
+        
+        # Ellenőrzés, hogy minden mező ki van-e töltve
+        if not all([room_name, room_capacity, subject, start_time, end_time]):
+            messagebox.showwarning("Figyelmeztetés", 
+                                 "Kérem töltse ki az összes mezőt!")
+            return
+            
+        # Kapacitás szám ellenőrzése
+        try:
+            capacity = int(room_capacity)
+            if capacity <= 0:
+                raise ValueError
+        except ValueError:
+            messagebox.showerror("Hiba", 
+                               "A terem kapacitásának pozitív számnak kell lennie!")
+            return
+
+        # Itt lehet majd feldolgozni az adatokat
+        print(f"Új adat hozzáadva:\n"
+              f"Teremnév: {room_name}\n"
+              f"Kapacitás: {room_capacity}\n"
+              f"Tárgy: {subject}\n"
+              f"Kezdés: {start_time}\n"
+              f"Befejezés: {end_time}")
+        
+        # Mezők törlése
+        for entry in [self.room_name_entry, self.room_capacity_entry, 
+                     self.subject_entry, self.start_time_entry, 
+                     self.end_time_entry]:
+            entry.delete(0, tk.END)
+            
+        # Időpont példák visszaállítása
+        self.start_time_entry.insert(0, "pl.: 8:00")
+        self.end_time_entry.insert(0, "pl.: 9:30")
+
+    def close_manual_window(self):
+        # Bezárjuk a manuális ablakot
+        self.manual_window.destroy()
+        # Újra megjelenítjük az eredeti ablakot
+        self.root.deiconify()
 
 if __name__ == "__main__":
     root = tk.Tk()
