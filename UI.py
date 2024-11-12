@@ -124,31 +124,32 @@ class OrarendTervezo:
         # Új ablak létrehozása
         self.result_window = tk.Toplevel()
         self.result_window.title("Generálás eredménye")
-        self.result_window.geometry("300x200")
+        self.result_window.geometry("400x250")  # Kicsit nagyobb ablak
         self.result_window.resizable(False, False)
         
         # Középre igazított üzenet
         message_frame = ttk.Frame(self.result_window)
         message_frame.pack(expand=True)
         
-        # Pipa ikon (opcionális)
-        success_label = ttk.Label(message_frame,
-                                text="✓",
-                                font=('Helvetica', 48))
-        success_label.pack(pady=10)
-        
-        # Sikeres üzenet
-        success_message = ttk.Label(message_frame,
-                                  text="Az algoritmus sikeresen lefutott!",
-                                  font=('Helvetica', 12))
-        success_message.pack(pady=10)
+        # Sikeres üzenet hangsúlyosan
+        success_message = ttk.Label(
+            message_frame,
+            text="Az algoritmus sikeresen lefutott!",
+            font=('Helvetica', 16, 'bold'),
+            foreground='#2c3e50'  # Sötétebb szín
+        )
+        success_message.pack(pady=30)
         
         # Exportálás gomb
-        export_button = tk.Button(message_frame,
-                                text="Exportálás",
-                                font=('Helvetica', 10),
-                                command=self.export_schedule)
-        export_button.pack(pady=20)
+        export_button = tk.Button(
+            message_frame,
+            text="Exportálás",
+            font=('Helvetica', 11),
+            padx=20,
+            pady=10,
+            command=self.export_schedule
+        )
+        export_button.pack(pady=30)
 
     def export_schedule(self):
         # Itt lesz majd az exportálás logikája
