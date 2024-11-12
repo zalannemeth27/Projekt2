@@ -30,12 +30,20 @@ class OrarendTervezo:
         
         self.file_label = ttk.Label(self.file_frame, 
                                   text="Nincs fájl kiválasztva", 
-                                  font=('Helvetica', 10))
+                                  font=('Helvetica', 10),
+                                  width=20)
         self.file_label.pack(side=tk.LEFT, padx=5)
+
+        # Manuális gomb
+        self.manual_button = tk.Button(self.file_frame,
+                                     text="Manuális...",
+                                     font=('Helvetica', 10))
+        self.manual_button.pack(side=tk.LEFT, padx=5)
+        self.manual_button.config(command=self.manual_mode)
 
         # Algoritmus választó rész
         ttk.Label(self.main_frame, 
-                 text="Optimalizálási algoritmus", 
+                 text="Optimalizálási algoritmus:", 
                  font=('Helvetica', 12)).pack(pady=10)
 
         self.algorithm_var = tk.StringVar()
@@ -80,7 +88,10 @@ class OrarendTervezo:
                 )
                 return
             self.selected_file = filename
-            self.file_label.config(text=filename.split('/')[-1])
+            short_name = filename.split('/')[-1]
+            if len(short_name) > 20:
+                short_name = short_name[:17] + "..."
+            self.file_label.config(text=short_name)
 
     def generate_schedule(self):
         if not hasattr(self, 'selected_file'):
@@ -104,6 +115,10 @@ class OrarendTervezo:
             f"Választott algoritmus: {self.algorithm_var.get()}"
         ):
             print("Órarend generálása kezdődik...")
+
+    def manual_mode(self):
+        # Itt lesz majd a manuális mód logikája
+        print("Manuális mód indítása...")
 
 if __name__ == "__main__":
     root = tk.Tk()
