@@ -152,7 +152,6 @@ class OrarendTervezo:
         export_button.pack(side=tk.BOTTOM, anchor=tk.SE, padx=10, pady=10)
 
     def export_schedule(self):
-        # Itt lesz majd az exportálás logikája
         try:
             # Fájl mentési ablak megnyitása
             filename = filedialog.asksaveasfilename(
