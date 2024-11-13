@@ -140,16 +140,16 @@ class OrarendTervezo:
         )
         success_message.pack(pady=30)
         
-        # Exportálás gomb
+        # Exportálás gomb - kisebb méret és jobb alsó sarok
         export_button = tk.Button(
-            message_frame,
+            self.result_window,  # Changed from message_frame to result_window
             text="Exportálás",
-            font=('Helvetica', 11),
-            padx=20,
-            pady=10,
+            font=('Helvetica', 9),  # Kisebb betűméret
+            padx=10,              # Kisebb padding
+            pady=5,
             command=self.export_schedule
         )
-        export_button.pack(pady=30)
+        export_button.pack(side=tk.BOTTOM, anchor=tk.SE, padx=10, pady=10)
 
     def export_schedule(self):
         # Itt lesz majd az exportálás logikája
@@ -194,12 +194,6 @@ class OrarendTervezo:
                               font=('Helvetica', 16, 'bold'))
         title_label.pack(pady=20)
 
-        # Információs szöveg
-        info_label = ttk.Label(self.manual_window,
-                             text="Itt manuálisan be lehet vinni az adatokat.",
-                             font=('Helvetica', 10))
-        info_label.pack(pady=10)
-
         # Adatbeviteli mezők kerete
         input_frame = ttk.Frame(self.manual_window, padding="20")
         input_frame.pack(fill=tk.BOTH, expand=True)
@@ -218,6 +212,7 @@ class OrarendTervezo:
         ttk.Label(input_frame, text="Tárgy neve:").pack(anchor=tk.W)
         self.subject_entry = ttk.Entry(input_frame, width=40)
         self.subject_entry.pack(fill=tk.X, pady=(0, 10))
+
 
         # Tárgy kezdeti időpontja
         ttk.Label(input_frame, text="Tárgy kezdeti időpontja:").pack(anchor=tk.W)
@@ -274,6 +269,25 @@ class OrarendTervezo:
         except ValueError:
             messagebox.showerror("Hiba", 
                                "A terem kapacitásának pozitív számnak kell lennie!")
+            return
+
+        # Időformátum ellenőrzése
+        def validate_time_format(time_str):
+            if len(time_str) != 5:  # óó:pp formátum = 5 karakter
+                return False
+            if time_str[2] != ':':  # kettőspont a közepén
+                return False
+            hours, minutes = time_str.split(':')
+            try:
+                h, m = int(hours), int(minutes)
+                return 0 <= h <= 23 and 0 <= m <= 59
+            except ValueError:
+                return False
+
+        # Időpontok ellenőrzése
+        if not validate_time_format(start_time) or not validate_time_format(end_time):
+            messagebox.showerror("Hiba", 
+                               "Az időpontokat óó:pp formátumban kell megadni! (pl.: 08:30)")
             return
 
         # Itt lehet majd feldolgozni az adatokat
