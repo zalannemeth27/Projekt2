@@ -124,32 +124,125 @@ class OrarendTervezo:
         # Új ablak létrehozása
         self.result_window = tk.Toplevel()
         self.result_window.title("Generálás eredménye")
-        self.result_window.geometry("400x250")  # Kicsit nagyobb ablak
-        self.result_window.resizable(False, False)
+        self.result_window.geometry("800x600")  # Nagyobb ablak a táblázatnak
         
-        # Középre igazított üzenet
-        message_frame = ttk.Frame(self.result_window)
-        message_frame.pack(expand=True)
-        
-        # Sikeres üzenet hangsúlyosan
-        success_message = ttk.Label(
-            message_frame,
-            text="Az algoritmus sikeresen lefutott!",
+        # Főcím
+        title_label = ttk.Label(
+            self.result_window,
+            text="Generált órarend",
             font=('Helvetica', 16, 'bold'),
-            foreground='#2c3e50'  # Sötétebb szín
+            foreground='#2c3e50'
         )
-        success_message.pack(pady=30)
+        title_label.pack(pady=10)
+
+        # Órarend táblázat keret
+        table_frame = ttk.Frame(self.result_window)
+        table_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+
+        # Órarend táblázat
+        self.schedule_table = ttk.Treeview(
+            table_frame,
+            columns=("Idő", "Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek"),
+            show="headings",
+            height=12
+        )
+
+        # Oszlopok beállítása
+        for col in self.schedule_table["columns"]:
+            self.schedule_table.heading(col, text=col)
+            self.schedule_table.column(col, width=120, anchor=tk.CENTER)
+
+        # Időpontok hozzáadása (8:00-tól 20:00-ig)
+        for hour in range(8, 20):
+            self.schedule_table.insert("", tk.END, values=(
+                f"{hour:02d}:00",
+                "", "", "", "", ""
+            ))
+
+        # Scrollbar hozzáadása
+        scrollbar = ttk.Scrollbar(
+            table_frame, 
+            orient=tk.VERTICAL, 
+            command=self.schedule_table.yview
+        )
+        self.schedule_table.configure(yscrollcommand=scrollbar.set)
         
-        # Exportálás gomb - kisebb méret és jobb alsó sarok
+        # Táblázat és scrollbar elhelyezése
+        self.schedule_table.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        # Exportálási opciók keret
+        export_frame = ttk.Frame(self.result_window)
+        export_frame.pack(fill=tk.X, padx=20, pady=10)
+
+        # Nézet választó
+        view_label = ttk.Label(
+            export_frame,
+            text="Exportálási nézet:",
+            font=('Helvetica', 10)
+        )
+        view_label.pack(side=tk.LEFT, padx=5)
+
+        self.view_var = tk.StringVar()
+        view_options = [
+            "Oktató szerint",
+            "Szak és évfolyam szerint",
+            "Terem szerint"
+        ]
+        self.view_combo = ttk.Combobox(
+            export_frame,
+            textvariable=self.view_var,
+            values=view_options,
+            state="readonly",
+            width=20
+        )
+        self.view_combo.pack(side=tk.LEFT, padx=5)
+        self.view_combo.set("Válasszon nézetet")
+
+        # Ha kiválasztunk egy nézetet, frissítjük a második comboboxot
+        self.view_combo.bind('<<ComboboxSelected>>', self.update_second_combo)
+
+        # Második választó (dinamikusan töltődik majd)
+        self.second_var = tk.StringVar()
+        self.second_combo = ttk.Combobox(
+            export_frame,
+            textvariable=self.second_var,
+            state="readonly",
+            width=25
+        )
+        self.second_combo.pack(side=tk.LEFT, padx=5)
+
+        # Exportálás gomb
         export_button = tk.Button(
-            self.result_window,  # Changed from message_frame to result_window
+            export_frame,
             text="Exportálás",
-            font=('Helvetica', 9),  # Kisebb betűméret
-            padx=10,              # Kisebb padding
+            font=('Helvetica', 9),
+            padx=10,
             pady=5,
             command=self.export_schedule
         )
-        export_button.pack(side=tk.BOTTOM, anchor=tk.SE, padx=10, pady=10)
+        export_button.pack(side=tk.RIGHT, padx=5)
+
+    def update_second_combo(self, event=None):
+        # A második combobox tartalmának frissítése a választott nézet alapján
+        selected_view = self.view_var.get()
+        
+        if selected_view == "Oktató szerint":
+            options = ["Dr. Kiss János", "Dr. Nagy Péter", "Dr. Szabó Mária"]  # Példa oktatók
+        elif selected_view == "Szak és évfolyam szerint":
+            options = ["Programtervező informatikus BSc 1. évf.", 
+                      "Mérnökinformatikus BSc 2. évf.",
+                      "Gazdaságinformatikus MSc 1. évf."]  # Példa szakok
+        elif selected_view == "Terem szerint":
+            options = ["IF-001", "IF-002", "IF-103", "IF-204"]  # Példa termek
+        else:
+            options = []
+
+        self.second_combo['values'] = options
+        if options:
+            self.second_combo.set("Válasszon...")
+        else:
+            self.second_combo.set("")
 
     def export_schedule(self):
         try:
