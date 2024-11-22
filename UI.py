@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
+import pandas as pd
 
 class OrarendTervezo:
     def __init__(self, root):
@@ -258,17 +259,30 @@ class OrarendTervezo:
             )
             
             if filename:
-                # Itt történik majd a tényleges exportálás
-                print(f"Exportálás ide: {filename}")
-                messagebox.showinfo("Siker", 
-                                  "Az órarend sikeresen exportálva!")
+                # Itt történik a tényleges exportálás
+                # Példa adatok generálása (ezeket a generált órarend adatai helyett kellene használni)
+                schedule_data = [
+                    {"Idő": "08:00", "Hétfő": "Matematika", "Kedd": "Fizika", "Szerda": "", "Csütörtök": "", "Péntek": ""},
+                    {"Idő": "09:00", "Hétfő": "", "Kedd": "", "Szerda": "Programozás", "Csütörtök": "", "Péntek": ""},
+                    # További órák...
+                ]
+
+                # Exportálás Excel formátumban
+                if filename.endswith('.xlsx'):
+                    df = pd.DataFrame(schedule_data)
+                    df.to_excel(filename, index=False)
+                # Exportálás CSV formátumban
+                elif filename.endswith('.csv'):
+                    df = pd.DataFrame(schedule_data)
+                    df.to_csv(filename, index=False)
+
+                messagebox.showinfo("Siker", "Az órarend sikeresen exportálva!")
                 
                 # Eredmény ablak bezárása
                 self.result_window.destroy()
                 
         except Exception as e:
-            messagebox.showerror("Hiba", 
-                               f"Hiba történt az exportálás során: {str(e)}")
+            messagebox.showerror("Hiba", f"Hiba történt az exportálás során: {str(e)}")
 
     def manual_mode(self):
         # Elrejtjük az eredeti ablakot
