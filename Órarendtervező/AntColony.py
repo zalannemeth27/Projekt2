@@ -1,12 +1,12 @@
 import random
 
 class AntColonyAlgorithm:
-    def __init__(self, population_size, generations, pheromone_decay, pheromone_intnesitiy, n_classes, n_days, n_slots):
+    def __init__(self, population_size, generations, pheromone_decay, pheromone_intensity, n_classes, n_days, n_slots):
         self.population_size = population_size
         self.generations = generations
         self.pheromone_decay = pheromone_decay
-        self.pheromone_intensity = pheromone_intnesitiy
-        self.n_clases = n_classes       # Tantárgyak száma
+        self.pheromone_intensity = pheromone_intensity
+        self.n_classes = n_classes       # Tantárgyak száma
         self.n_days = n_days            # Napok száma
         self.n_slots = n_slots          # Az időpontok száma
 
