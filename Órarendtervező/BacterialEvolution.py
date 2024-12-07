@@ -1,5 +1,6 @@
 import random
 
+
 class BacterialEvolutionAlgorithm:
     def __init__(self, population_size, generations, mutation_rate, n_classes, n_days, n_slots):
         self.population_size = population_size
@@ -8,10 +9,10 @@ class BacterialEvolutionAlgorithm:
         self.n_classes = n_classes
         self.n_days = n_days
         self.n_slots = n_slots
-        
+
         # Inicializálás
         self.population = self.initialize_population()
-        
+
     def initialize_population(self):
         # Véletlenszerű órarendek generálása
         population = []
@@ -38,16 +39,19 @@ class BacterialEvolutionAlgorithm:
         # Véletlenszerű mutációk (pl. tantárgyak újra elosztása a napok között)
         if random.random() < self.mutation_rate:
             class_id = random.choice(list(individual.keys()))
-            individual[class_id] = (random.randint(1, self.n_days), random.randint(1, self.n_slots))
+            individual[class_id] = (random.randint(
+                1, self.n_days), random.randint(1, self.n_slots))
         return individual
 
     def evolve(self):
         for generation in range(self.generations):
             # Fitnesz kiszámítása a populációra
-            fitness_values = [self.fitness(individual) for individual in self.population]
-            
+            fitness_values = [self.fitness(individual)
+                              for individual in self.population]
+
             # Kiválasztás: legjobb egyedek megtartása
-            sorted_population = [x for _, x in sorted(zip(fitness_values, self.population))]
+            sorted_population = [x for _, x in sorted(
+                zip(fitness_values, self.population), key=lambda item: item[0])]
             self.population = sorted_population[:self.population_size // 2]
 
             # Reprodukció: a legjobb egyedek párosítása
@@ -59,8 +63,9 @@ class BacterialEvolutionAlgorithm:
 
             # Mutáció alkalmazása
             self.population.extend(new_population)
-            self.population = [self.mutate(individual) for individual in self.population]
-            
+            self.population = [self.mutate(individual)
+                               for individual in self.population]
+
         # A legjobb órarend visszaadása
         best_individual = min(self.population, key=self.fitness)
         return best_individual

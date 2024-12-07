@@ -7,30 +7,34 @@ from Genetic import GeneticAlgorithm
 from BacterialEvolution import BacterialEvolutionAlgorithm
 from AntColony import AntColonyAlgorithm
 from LocalSearch import LocalSearchAlgorithm
+import sqlite3
+
 
 class OrarendTervezo:
     def __init__(self, root):
         self.best_schedule = None
+        self.schedule_dict = None
+        self.oktato_nevek = None
         self.root = root
         self.root.title("Órarend Tervező")
         self.root.geometry("400x400")
         self.root.resizable(False, False)
-        
+
         # Fő konténer
         self.main_frame = ttk.Frame(self.root, padding="20")
         self.main_frame.pack(expand=True)
 
         # Főcím
-        title_label = ttk.Label(self.main_frame, 
-                              text="Órarend Tervező", 
-                              font=('Helvetica', 24, 'bold'),
-                              foreground="#2c3e50")
+        title_label = ttk.Label(self.main_frame,
+                                text="Órarend Tervező",
+                                font=('Helvetica', 24, 'bold'),
+                                foreground="#2c3e50")
         title_label.pack(pady=30)
 
         # Algoritmus választó rész
-        ttk.Label(self.main_frame, 
-                 text="Optimalizálási algoritmus:", 
-                 font=('Helvetica', 12)).pack(pady=10)
+        ttk.Label(self.main_frame,
+                  text="Optimalizálási algoritmus:",
+                  font=('Helvetica', 12)).pack(pady=10)
 
         self.algorithm_var = tk.StringVar()
         algorithms = [
@@ -39,31 +43,31 @@ class OrarendTervezo:
             "Hangyakolónia Algoritmus",
             "Lokális keresési módszer"
         ]
-        self.algorithm_combo = ttk.Combobox(self.main_frame, 
-                                          textvariable=self.algorithm_var,
-                                          values=algorithms,
-                                          width=30,
-                                          state="readonly")
+        self.algorithm_combo = ttk.Combobox(self.main_frame,
+                                            textvariable=self.algorithm_var,
+                                            values=algorithms,
+                                            width=30,
+                                            state="readonly")
         self.algorithm_combo.pack(pady=10)
         self.algorithm_combo.set("Válasszon algoritmust")
 
         # Generálás gomb
         self.generate_button = tk.Button(self.main_frame,
-                                       text="Órarend generálása",
-                                       font=('Helvetica', 10),
-                                       padx=10,
-                                       pady=5)
+                                         text="Órarend generálása",
+                                         font=('Helvetica', 10),
+                                         padx=10,
+                                         pady=5)
         self.generate_button.pack(pady=20)
         self.generate_button.config(command=self.generate_schedule)
 
     def generate_schedule(self):
         if not self.algorithm_var.get() or self.algorithm_var.get() == "Válasszon algoritmust":
             messagebox.showwarning(
-                "Figyelmeztetés", 
+                "Figyelmeztetés",
                 "Kérem válasszon algoritmust!"
             )
             return
-            
+
         if messagebox.askyesno(
             "Megerősítés",
             f"Szeretnéd elíndtani az órarend generálását?\n\n"
@@ -71,17 +75,17 @@ class OrarendTervezo:
         ):
             # Itt fut majd le az algoritmus
             print("Órarend generálása kezdődik...")
-            
+
             # Algoritmus lefutása után megjelenítjük az eredmény ablakot
-            self.run_algorithm()
             self.show_result_window()
+            self.run_algorithm()
 
     def run_algorithm(self):
-        #Algoritmusok implementálása
+        # Algoritmusok implementálása
         algorithm = self.algorithm_var.get()
         if algorithm == "Genetikus algoritmus":
             self.genetic_algorithm()
-        elif algorithm == "Bakteriális Evolúciós algoritmus":
+        elif algorithm == "Bakteriális Evolúciós Algoritmus":
             self.bacterial_evolution_algorithm()
         elif algorithm == "Hangyakolónia algoritmus":
             self.ant_colony_algorithm()
@@ -91,14 +95,14 @@ class OrarendTervezo:
     def genetic_algorithm(self):
         print("Genetikus algoritmus futtatása...")
 
-        n_classes = 10  # pl 10 tantárgy
+        n_classes = 20  # pl 10 tantárgy
         n_days = 5      # 5 nap
         n_slots = 6     # 6 időpont
 
         ga = GeneticAlgorithm(
-            population_size=50, 
-            generations=100, 
-            mutation_rate=0.1, 
+            population_size=50,
+            generations=100,
+            mutation_rate=0.1,
             crossover_rate=0.7,
             n_classes=n_classes,
             n_days=n_days,
@@ -111,11 +115,11 @@ class OrarendTervezo:
     def bacterial_evolution_algorithm(self):
         print("Bakteriális Evolúciós algoritmus futtatása...")
 
-        n_classes = 10  # pl 10 tantárgy
+        n_classes = 20  # pl 10 tantárgy
         n_days = 5      # 5 nap
         n_slots = 6     # 6 időpont
 
-        #Bakteriális evolúciós algoritmus futtatása
+        # Bakteriális evolúciós algoritmus futtatása
         bea = BacterialEvolutionAlgorithm(
             population_size=50,
             generations=100,
@@ -131,14 +135,14 @@ class OrarendTervezo:
     def ant_colony_algorithm(self):
         print("Hangyakolónia algoritums futtatása...")
 
-        n_classes = 10  # pl 10 tantárgy
+        n_classes = 20  # pl 10 tantárgy
         n_days = 5      # 5 nap
         n_slots = 6     # 6 időpont
 
-        #Hangyakolónia algoritums futtatása
+        # Hangyakolónia algoritums futtatása
         aco = AntColonyAlgorithm(
             population_size=50,
-            generations = 100,
+            generations=100,
             pheromone_decay=0.1,
             pheromone_instensity=1.0,
             n_classes=n_classes,
@@ -152,34 +156,93 @@ class OrarendTervezo:
     def local_search_algorithm(self):
         print("Lokális keresési algoritmus futtatása...")
 
-        n_classes = 10  # pl 10 tantárgy
+        n_classes = 20  # pl 10 tantárgy
         n_days = 5      # 5 nap
         n_slots = 6     # 6 időpont
 
         # Lokális keresési algoritmus futtatása
-        lsa = LocalSearchAlgorithm(n_classes=n_classes, n_days=n_days, n_slots=n_slots)
+        lsa = LocalSearchAlgorithm(
+            n_classes=n_classes, n_days=n_days, n_slots=n_slots)
 
         best_schedule = lsa.search()
         self.update_result_text(best_schedule)
 
+    def populate_schedule(self, schedule_data, schedule_dict):
+        # Initialize the schedule table with empty values
+        for hour in range(8, 16):
+            self.schedule_table.insert("", tk.END, values=(
+                f"{hour:02d}:00",
+                "", "", "", "", ""
+            ))
+
+        # Populate the schedule table with the provided data
+        for class_id, (day, hour_slot) in schedule_data.items():
+            if self.algorithm_var.get() == "Bakteriális Evolúciós Algoritmus":
+                day -= 1
+                hour_slot -= 1
+                class_id -= 1
+            # Calculate the row index based on the hour slot
+            row_index = hour_slot + 8  # since hours start from 8
+            # Get the current values in the row
+            current_values = self.schedule_table.item(
+                self.schedule_table.get_children()[row_index - 8])['values']
+            # Update the values with the class ID in the correct day column
+            updated_values = list(current_values)
+            # day + 1 because the first column is the hour
+            updated_values[day +
+                           1] = f"{schedule_dict[class_id + 1][1]} - {schedule_dict[class_id + 1][0]}"
+            # Update the row in the schedule table
+            self.schedule_table.item(self.schedule_table.get_children()[
+                                     row_index - 8], values=tuple(updated_values))
+
     def update_result_text(self, best_schedule):
         # Text widget frissítítése
-        if hasattr(self, 'result text') and self.result_text.winfo_exists():
-            self.result_text.delete(1.0, tk.END) # Előző eredmény törlése
+        if self.result_text and self.result_text.winfo_exists():
+            self.result_text.delete(1.0, tk.END)  # Előző eredmény törlése
             self.result_text.insert(tk.END, "Legjobb órarend:\n")
 
+            conn = sqlite3.connect('schedule.db')
+            cursor = conn.cursor()
+
+            cursor.execute(
+                "SELECT Kurzusok.KurzusID, Targyak.Nev, Kurzusok.Tipus, Oktatok.Nev FROM Kurzusok JOIN Targyak ON Kurzusok.TargyID = Targyak.TargyID JOIN Oktatok ON Kurzusok.OktatoID = Oktatok.OktatoID")
+            schedule_db_data = cursor.fetchall()
+            schedule_dict = {item[0]: item[1:] for item in schedule_db_data}
+
+            cursor.close()
+            cursor = conn.cursor()
+
+            cursor.execute(
+                "SELECT OktatoID, Nev FROM Oktatok")
+            oktato_nevek = cursor.fetchall()
+            self.oktato_nevek = {item[0]: item[1] for item in oktato_nevek}
+
+            self.schedule_dict = schedule_dict
+            self.best_schedule = best_schedule
+
+            self.populate_schedule(best_schedule, schedule_dict)
+
+            days = ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek"]
+            time_slot = ["08:00", "09:00", "10:00",
+                         "11:00", "12:00", "13:00", "14:00", "15:00"]
+
             for class_id, (day, slot) in best_schedule.items():
-                self.result_text.insert(tk.END, f"Tantárgy {class_id} - Nap: {day}, Időpont: {slot}\n")
+                if self.algorithm_var.get() == "Bakteriális Evolúciós Algoritmus":
+                    day -= 1
+                    slot -= 1
+                    class_id -= 1
+                self.result_text.insert(
+                    tk.END, f"Tantárgy {schedule_dict[class_id + 1][1]} - {schedule_dict[class_id + 1][0]} - Nap: {days[day]}, Időpont: {time_slot[slot]}\n")
+
         else:
             print("A Text widget nem található vagy bezárták.")
-        
-                
+
     def show_result_window(self):
         # Új ablak létrehozása
         self.result_window = tk.Toplevel()
         self.result_window.title("Generálás eredménye")
         self.result_window.geometry("800x600")  # Nagyobb ablak a táblázatnak
-        
+
         # Főcím
         title_label = ttk.Label(
             self.result_window,
@@ -207,20 +270,20 @@ class OrarendTervezo:
             self.schedule_table.column(col, width=120, anchor=tk.CENTER)
 
         # Időpontok hozzáadása (8:00-tól 20:00-ig)
-        for hour in range(8, 20):
-            self.schedule_table.insert("", tk.END, values=(
-                f"{hour:02d}:00",
-                "", "", "", "", ""
-            ))
+        # for hour in range(8, 20):
+        #     self.schedule_table.insert("", tk.END, values=(
+        #         f"{hour:02d}:00",
+        #         "", "", "", "", ""
+        #     ))
 
         # Scrollbar hozzáadása
         scrollbar = ttk.Scrollbar(
-            table_frame, 
-            orient=tk.VERTICAL, 
+            table_frame,
+            orient=tk.VERTICAL,
             command=self.schedule_table.yview
         )
         self.schedule_table.configure(yscrollcommand=scrollbar.set)
-        
+
         # Táblázat és scrollbar elhelyezése
         self.schedule_table.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
@@ -229,7 +292,8 @@ class OrarendTervezo:
         result_frame = ttk.Frame(self.result_window)
         result_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
 
-        self.result_text = tk.Text(result_frame, height=10, width=60) # Az eredmények számára Text widget
+        # Az eredmények számára Text widget
+        self.result_text = tk.Text(result_frame, height=10, width=80)
         self.result_text.pack()
 
         # Exportálási opciók keret
@@ -287,13 +351,13 @@ class OrarendTervezo:
     def update_second_combo(self, event=None):
         # A második combobox tartalmának frissítése a választott nézet alapján
         selected_view = self.view_var.get()
-        
+
         if selected_view == "Oktató szerint":
-            options = ["Dr. Kiss János", "Dr. Nagy Péter", "Dr. Szabó Mária"]  # Példa oktatók
+            options = list(self.oktato_nevek.values())
         elif selected_view == "Szak és Évfolyam szerint":
-            options = ["Programtervező informatikus BSc 1. évf.", 
-                      "Mérnökinformatikus BSc 2. évf.",
-                      "Gazdaságinformatikus MSc 1. évf."]  # Példa szakok
+            options = ["Programtervező informatikus BSc 1. évf.",
+                       "Mérnökinformatikus BSc 2. évf.",
+                       "Gazdaságinformatikus MSc 1. évf."]  # Példa szakok
         elif selected_view == "Terem szerint":
             options = ["IF-001", "IF-002", "IF-103", "IF-204"]  # Példa termek
         else:
@@ -304,6 +368,49 @@ class OrarendTervezo:
             self.second_combo.set("Válasszon...")
         else:
             self.second_combo.set("")
+
+    def populate_schedule_export(self, schedule_data, schedule_dict, selected_name, view_var):
+        if view_var == "Oktató szerint":
+            # Initialize the schedule model for the selected oktato
+            selected_schedule = [{"Idő": f"{hour:02d}:00", "Hétfő": "", "Kedd": "",
+                                  "Szerda": "", "Csütörtök": "", "Péntek": ""} for hour in range(8, 16)]
+
+            # Populate the schedule model with the provided data
+            for class_id, (day, hour_slot) in schedule_data.items():
+                if self.algorithm_var.get() == "Bakteriális Evolúciós Algoritmus":
+                    day -= 1
+                    hour_slot -= 1
+                    class_id -= 1
+                # Calculate the row index based on the hour slot
+                row_index = hour_slot
+                # Update the values with the class ID in the correct day column
+                day_names = ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek"]
+                # Assuming the oktato name is the third element in the tuple
+                oktato = schedule_dict[class_id + 1][2]
+                if oktato == selected_name:
+                    selected_schedule[row_index][day_names[day]
+                                                 ] = f"{schedule_dict[class_id + 1][1]} - {schedule_dict[class_id + 1][0]}"
+
+            return selected_schedule
+        else:
+            # Initialize the schedule data model with empty values
+            schedule_model = [{"Idő": f"{hour:02d}:00", "Hétfő": "", "Kedd": "",
+                               "Szerda": "", "Csütörtök": "", "Péntek": ""} for hour in range(8, 16)]
+
+            # Populate the schedule model with the provided data
+            for class_id, (day, hour_slot) in schedule_data.items():
+                if self.algorithm_var.get() == "Bakteriális Evolúciós Algoritmus":
+                    day -= 1
+                    hour_slot -= 1
+                    class_id -= 1
+                # Calculate the row index based on the hour slot
+                row_index = hour_slot
+                # Update the values with the class ID in the correct day column
+                day_names = ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek"]
+                schedule_model[row_index][day_names[day]
+                                          ] = f"{schedule_dict[class_id + 1][1]} - {schedule_dict[class_id + 1][0]}"
+
+            return schedule_model
 
     def export_schedule(self):
         try:
@@ -317,13 +424,18 @@ class OrarendTervezo:
                 ],
                 title="Órarend mentése"
             )
-            
+
             if filename:
                 # Példa adatok generálása
-                schedule_data = [
-                    {"Idő": "08:00", "Hétfő": "Matematika", "Kedd": "Fizika", "Szerda": "", "Csütörtök": "", "Péntek": ""},
-                    {"Idő": "09:00", "Hétfő": "", "Kedd": "", "Szerda": "Programozás", "Csütörtök": "", "Péntek": ""},
-                ]
+                # schedule_data = [
+                #     {"Idő": "08:00", "Hétfő": "Matematika", "Kedd": "Fizika",
+                #         "Szerda": "", "Csütörtök": "", "Péntek": ""},
+                #     {"Idő": "09:00", "Hétfő": "", "Kedd": "",
+                #         "Szerda": "Programozás", "Csütörtök": "", "Péntek": ""},
+                # ]
+
+                schedule_data = self.populate_schedule_export(
+                    self.best_schedule, self.schedule_dict, self.second_combo.get(), self.view_var.get())
 
                 if filename.endswith('.xlsx'):
                     df = pd.DataFrame(schedule_data)
@@ -332,11 +444,13 @@ class OrarendTervezo:
                     df = pd.DataFrame(schedule_data)
                     df.to_csv(filename, index=False)
 
-                messagebox.showinfo("Siker", "Az Órarend sikeresen exportálva!")
+                messagebox.showinfo(
+                    "Siker", "Az Órarend sikeresen exportálva!")
                 self.result_window.destroy()
-                
+
         except Exception as e:
-            messagebox.showerror("Hiba", f"Hiba történt az exportálás során: {str(e)}")
+            messagebox.showerror(
+                "Hiba", f"Hiba történt az exportálás során: {str(e)}")
 
     def export_to_excel(self, filename):
         # Táblázat exportálása Excel fájlba
@@ -344,10 +458,12 @@ class OrarendTervezo:
         for row in self.schedule_table.get_children():
             row_data = self.schedule_table.item(row)["values"]
             data.append(row_data)
-        
-        df = pd.DataFrame(data, columns=["Idő", "Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek"])
+
+        df = pd.DataFrame(
+            data, columns=["Idő", "Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek"])
         df.to_excel(filename, index=False)
-        messagebox.showinfo("Siker", "Órarend sikeresen exportálva Excel formátumban!")
+        messagebox.showinfo(
+            "Siker", "Órarend sikeresen exportálva Excel formátumban!")
 
     def export_to_csv(self, filename):
         # Táblázat exportálása CSV fájlba
@@ -355,10 +471,13 @@ class OrarendTervezo:
         for row in self.schedule_table.get_children():
             row_data = self.schedule_table.item(row)["values"]
             data.append(row_data)
-        
-        df = pd.DataFrame(data, columns=["Idő", "Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek"])
+
+        df = pd.DataFrame(
+            data, columns=["Idő", "Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek"])
         df.to_csv(filename, index=False)
-        messagebox.showinfo("Siker", "Órarend sikeresen exportálva CSV formátumban!")
+        messagebox.showinfo(
+            "Siker", "Órarend sikeresen exportálva CSV formátumban!")
+
 
 if __name__ == "__main__":
     root = tk.Tk()
