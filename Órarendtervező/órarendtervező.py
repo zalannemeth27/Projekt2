@@ -168,30 +168,30 @@ class OrarendTervezo:
         self.update_result_text(best_schedule)
 
     def populate_schedule(self, schedule_data, schedule_dict):
-        # Initialize the schedule table with empty values
+        # Inicializálja az ütemezési táblázatot üres értékekkel
         for hour in range(8, 16):
             self.schedule_table.insert("", tk.END, values=(
                 f"{hour:02d}:00",
                 "", "", "", "", ""
             ))
 
-        # Populate the schedule table with the provided data
+        # Feltölti az ütemezési táblázatot a megadott adatokkal
         for class_id, (day, hour_slot) in schedule_data.items():
             if self.algorithm_var.get() == "Bakteriális Evolúciós Algoritmus":
                 day -= 1
                 hour_slot -= 1
                 class_id -= 1
-            # Calculate the row index based on the hour slot
-            row_index = hour_slot + 8  # since hours start from 8
-            # Get the current values in the row
+            # Kiszámitja a sorindexet az órasáv alapján
+            row_index = hour_slot + 8 
+            # Aktualis ertekek a sorban
             current_values = self.schedule_table.item(
                 self.schedule_table.get_children()[row_index - 8])['values']
-            # Update the values with the class ID in the correct day column
+            # Frissíti az értékeket az osztályazonosítóval a megfelelő nap oszlopban
             updated_values = list(current_values)
-            # day + 1 because the first column is the hour
+            # day + 1 mert az elso oszlop az ora
             updated_values[day +
                            1] = f"{schedule_dict[class_id + 1][1]} - {schedule_dict[class_id + 1][0]}"
-            # Update the row in the schedule table
+            # Frissiti a sort az utemezesei tablazatban
             self.schedule_table.item(self.schedule_table.get_children()[
                                      row_index - 8], values=tuple(updated_values))
 
@@ -269,12 +269,6 @@ class OrarendTervezo:
             self.schedule_table.heading(col, text=col)
             self.schedule_table.column(col, width=120, anchor=tk.CENTER)
 
-        # Időpontok hozzáadása (8:00-tól 20:00-ig)
-        # for hour in range(8, 20):
-        #     self.schedule_table.insert("", tk.END, values=(
-        #         f"{hour:02d}:00",
-        #         "", "", "", "", ""
-        #     ))
 
         # Scrollbar hozzáadása
         scrollbar = ttk.Scrollbar(
@@ -371,21 +365,21 @@ class OrarendTervezo:
 
     def populate_schedule_export(self, schedule_data, schedule_dict, selected_name, view_var):
         if view_var == "Oktató szerint":
-            # Initialize the schedule model for the selected oktato
+            # Inicializálja a kiválasztott oktato ütemezési modelljét
             selected_schedule = [{"Idő": f"{hour:02d}:00", "Hétfő": "", "Kedd": "",
                                   "Szerda": "", "Csütörtök": "", "Péntek": ""} for hour in range(8, 16)]
 
-            # Populate the schedule model with the provided data
+            # Feltolti az ütemezési modellt a megadott adatokkal
             for class_id, (day, hour_slot) in schedule_data.items():
                 if self.algorithm_var.get() == "Bakteriális Evolúciós Algoritmus":
                     day -= 1
                     hour_slot -= 1
                     class_id -= 1
-                # Calculate the row index based on the hour slot
+                # Kiszamítja a sorindexet az órasáv alapján
                 row_index = hour_slot
-                # Update the values with the class ID in the correct day column
+                # Frissíti az értékeket az osztályazonosítóval a megfelelő nap oszlopban
                 day_names = ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek"]
-                # Assuming the oktato name is the third element in the tuple
+                # Feltételezi hogy az oktato név a harmadik elem a sorban
                 oktato = schedule_dict[class_id + 1][2]
                 if oktato == selected_name:
                     selected_schedule[row_index][day_names[day]
@@ -393,19 +387,19 @@ class OrarendTervezo:
 
             return selected_schedule
         else:
-            # Initialize the schedule data model with empty values
+            # Inicializálja az ütemezési adatmodellt üres értékekkel
             schedule_model = [{"Idő": f"{hour:02d}:00", "Hétfő": "", "Kedd": "",
                                "Szerda": "", "Csütörtök": "", "Péntek": ""} for hour in range(8, 16)]
 
-            # Populate the schedule model with the provided data
+            # Feltölti az ütemezési modellt a megadott adatokkal
             for class_id, (day, hour_slot) in schedule_data.items():
                 if self.algorithm_var.get() == "Bakteriális Evolúciós Algoritmus":
                     day -= 1
                     hour_slot -= 1
                     class_id -= 1
-                # Calculate the row index based on the hour slot
+                # Kiszámítja a sorindexet az órasáv alapján
                 row_index = hour_slot
-                # Update the values with the class ID in the correct day column
+                # Frissíti az értékeket az osztályazonosítóval a megfelelő nap oszlopban
                 day_names = ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek"]
                 schedule_model[row_index][day_names[day]
                                           ] = f"{schedule_dict[class_id + 1][1]} - {schedule_dict[class_id + 1][0]}"
@@ -426,13 +420,6 @@ class OrarendTervezo:
             )
 
             if filename:
-                # Példa adatok generálása
-                # schedule_data = [
-                #     {"Idő": "08:00", "Hétfő": "Matematika", "Kedd": "Fizika",
-                #         "Szerda": "", "Csütörtök": "", "Péntek": ""},
-                #     {"Idő": "09:00", "Hétfő": "", "Kedd": "",
-                #         "Szerda": "Programozás", "Csütörtök": "", "Péntek": ""},
-                # ]
 
                 schedule_data = self.populate_schedule_export(
                     self.best_schedule, self.schedule_dict, self.second_combo.get(), self.view_var.get())
